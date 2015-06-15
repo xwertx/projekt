@@ -1,0 +1,16 @@
+namespace :rabbitmq do
+  desc "Setup routing"
+  task :setup do
+    require "bunny"
+
+    conn = Bunny.new
+    conn.start
+
+    ch = conn.create_channel
+
+    x = ch.fanout("uploader.media")
+    ch.queue("pdf_gen.media", durable: true).bind("uploader.media")
+
+    conn.close
+  end
+end
